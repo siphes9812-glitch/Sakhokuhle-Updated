@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helper Primitives ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isEmailVerified() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == "siphes9812@gmail.com"
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validation Blueprints ---
+    function isValidApplication(data) {
+      return data.keys().hasAll(['firstName', 'lastName', 'idNumber', 'phoneNumber', 'email', 'address', 'programId', 'submittedAt', 'status'])
+        && data.firstName is string && data.firstName.size() > 0 && data.firstName.size() <= 100
+        && data.lastName is string && data.lastName.size() > 0 && data.lastName.size() <= 100
+        && data.idNumber is string && data.idNumber.size() == 13
+        && data.phoneNumber is string && data.phoneNumber.size() >= 10 && data.phoneNumber.size() <= 20
+        && data.email is string && data.email.size() > 5 && data.email.size() <= 100
+        && data.address is string && data.address.size() > 5 && data.address.size() <= 500
+        && data.programId is string && data.programId.size() > 0
+        && data.submittedAt is string // server timestamp check preferred, but skill says we can use request.time
+        && data.status in ['pending', 'reviewed', 'accepted', 'rejected']
+        && (data.keys().size() == 9 || (data.keys().size() == 11 && data.keys().hasAll(['programName', 'fee'])));
+    }
+
+    // --- Collection Rules ---
+
+    match /admins/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      // Bootstrapped admin email check would happen here but we rely on document existence
+      allow list, write: if false; // Only manageable through Firebase Console or backend for security
+    }
+
+    match /applications/{applicationId} {
+      allow create: if isValidId(applicationId) 
+        && isValidApplication(incoming())
+        && incoming().status == 'pending'
+        && incoming().submittedAt == string(request.time); 
+
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      
+      allow update: if isAdmin()
+        && isValidApplication(incoming())
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['status'])
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /programs/{programId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gallery/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

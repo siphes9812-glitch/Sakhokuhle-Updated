@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "Application": {
+      "title": "Student Application",
+      "description": "Information provided by a student applying for a program.",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string", "description": "Student's first name" },
+        "lastName": { "type": "string", "description": "Student's last name" },
+        "idNumber": { "type": "string", "description": "Student's South African ID number" },
+        "phoneNumber": { "type": "string", "description": "Contact phone number" },
+        "email": { "type": "string", "description": "Contact email address" },
+        "address": { "type": "string", "description": "Residential address" },
+        "programId": { "type": "string", "description": "The ID of the program selected" },
+        "programName": { "type": "string", "description": "The name of the program selected" },
+        "fee": { "type": "string", "description": "The fee for the selected program" },
+        "proofOfPaymentUrl": { "type": "string", "description": "URL to the uploaded proof of payment - for now we use a string as a placeholder or real if we had storage" },
+        "submittedAt": { "type": "string", "format": "date-time", "description": "When the application was submitted" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "accepted", "rejected"], "description": "Current status of the application" }
+      },
+      "required": ["firstName", "lastName", "idNumber", "phoneNumber", "email", "address", "programId", "submittedAt", "status"]
+    },
+    "Admin": {
+      "title": "Admin Record",
+      "description": "Record of a user with administrative privileges.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Verified email of the admin" }
+      },
+      "required": ["email"]
+    },
+    "Program": {
+      "title": "Educational Program",
+      "description": "A course offered by the school.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "fee": { "type": "string" },
+        "duration": { "type": "string" },
+        "iconName": { "type": "string", "description": "Lucide icon name" },
+        "color": { "type": "string", "description": "Tailwind color class" },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "description", "fee", "duration", "iconName", "color"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Image",
+      "description": "An image displayed in the gallery.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["Graduation", "Campus", "Students"] },
+        "imageUrl": { "type": "string" },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "imageUrl"]
+    }
+  },
+  "firestore": {
+    "applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Collection of student applications."
+    },
+    "admins/{userId}": {
+      "schema": "Admin",
+      "description": "Collection of users with admin access."
+    },
+    "programs/{programId}": {
+      "schema": "Program",
+      "description": "Collection of school programs."
+    },
+    "gallery/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Collection of gallery images."
+    }
+  }
+}

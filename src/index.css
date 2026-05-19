@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Lora", serif;
+  --color-primary: #5a5a40; /* Olive/Earthy Green */
+  --color-secondary: #8b4513; /* Saddle Brown - Accent */
+  --color-accent: #f5f5f0; /* Bone/Off-white */
+  --color-dark: #1a1a15;
+  --color-body: #2d2d2a;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-accent text-body font-sans;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-medium tracking-tight text-dark;
+  }
+}
+
+.glass-nav {
+  @apply bg-accent/80 backdrop-blur-md border-b border-primary/10;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-primary text-white rounded-full font-sans font-bold transition-all hover:opacity-90 hover:scale-105 active:scale-95 disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-secondary text-white rounded-full font-sans font-bold transition-all hover:opacity-90 hover:scale-105 active:scale-95;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.input-admin {
+  @apply w-full px-5 py-3 bg-white border border-primary/10 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all text-sm font-medium h-auto;
+}
+
+.label-admin {
+  @apply block text-[10px] font-bold uppercase tracking-widest text-primary/40 mb-2 mt-4 first:mt-0;
+}

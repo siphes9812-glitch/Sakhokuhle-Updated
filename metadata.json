@@ -1,0 +1,8 @@
+{
+  "name": "Sakhokuhle School of African Medicine and Crafting",
+  "description": "Official website for SSAMC offering traditional medicine and modern vocational training to empower African communities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
